@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, Trash2, Building2, Tag } from "lucide-react";
+import { UsersAdmin } from "@/components/users-admin";
 
 export const Route = createFileRoute("/settings")({ component: () => <Protected path="/settings"><Settings /></Protected> });
 
