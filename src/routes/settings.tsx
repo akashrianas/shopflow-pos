@@ -144,6 +144,10 @@ function Settings() {
             </div>
           </Card>
         </TabsContent>
+
+        <TabsContent value="users">
+          <UsersAdmin />
+        </TabsContent>
       </Tabs>
     </div>
   );
