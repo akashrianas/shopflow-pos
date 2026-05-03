@@ -5,25 +5,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { AlertTriangle, Search } from "lucide-react";
 
 export const Route = createFileRoute("/inventory")({ component: () => <Protected path="/inventory"><Inventory /></Protected> });
 
 function Inventory() {
   const [products, setProducts] = useState<{ id: string; name: string; stock_quantity: number; low_stock_threshold: number; sell_price: number }[]>([]);
+  const [q, setQ] = useState("");
   useEffect(() => {
     supabase.from("products").select("id, name, stock_quantity, low_stock_threshold, sell_price").order("stock_quantity").then(({ data }) => setProducts(data ?? []));
   }, []);
-  const lowCount = products.filter((p) => p.stock_quantity <= p.low_stock_threshold).length;
+  const filtered = products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
+  const lowCount = filtered.filter((p) => p.stock_quantity <= p.low_stock_threshold).length;
 
   return (
     <div className="p-6 md:p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-        <p className="text-muted-foreground mt-1">{lowCount} items low on stock</p>
+      <div className="flex flex-wrap gap-4 items-end justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
+          <p className="text-muted-foreground mt-1">{lowCount} items low on stock • {filtered.length} of {products.length}</p>
+        </div>
+        <div className="relative w-full md:w-80">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products…" className="pl-9" />
+        </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {products.map((p) => {
+        {filtered.map((p) => {
           const low = p.stock_quantity <= p.low_stock_threshold;
           const pct = Math.min(100, (p.stock_quantity / Math.max(p.low_stock_threshold * 4, 20)) * 100);
           return (

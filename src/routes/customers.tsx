@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/customers")({ component: () => <Protected path="/customers"><Customers /></Protected> });
 
@@ -15,16 +17,25 @@ function tier(pts: number) {
 
 function Customers() {
   const [list, setList] = useState<{ id: string; name: string; phone: string | null; email: string | null; loyalty_points: number; total_spent: number; visit_count: number }[]>([]);
+  const [q, setQ] = useState("");
   useEffect(() => { supabase.from("customers").select("*").order("created_at", { ascending: false }).then(({ data }) => setList(data ?? [])); }, []);
+  const ql = q.toLowerCase();
+  const filtered = list.filter((c) => c.name.toLowerCase().includes(ql) || (c.phone ?? "").toLowerCase().includes(ql) || (c.email ?? "").toLowerCase().includes(ql));
 
   return (
     <div className="p-6 md:p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Customers</h1>
-        <p className="text-muted-foreground mt-1">{list.length} customers • Loyalty tiers: Bronze / Silver / Gold</p>
+      <div className="flex flex-wrap gap-4 items-end justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Customers</h1>
+          <p className="text-muted-foreground mt-1">{filtered.length} of {list.length} customers • Bronze / Silver / Gold</p>
+        </div>
+        <div className="relative w-full md:w-80">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, phone, email…" className="pl-9" />
+        </div>
       </div>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        {list.map((c) => {
+        {filtered.map((c) => {
           const t = tier(c.loyalty_points);
           return (
             <Card key={c.id} className="glass p-4">
