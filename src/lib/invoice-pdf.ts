@@ -50,7 +50,7 @@ export function generateInvoicePdf(d: InvoiceData) {
   doc.text(`Payment: ${d.paymentMethod}`, w / 2, y + 30);
 
   y += 80;
-  doc.setFillColor(240);
+  doc.setFillColor(240, 240, 240);
   doc.rect(40, y, w - 80, 24, "F");
   doc.setFont("helvetica", "bold").setFontSize(10);
   doc.text("Item", 50, y + 16);
