@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, Trash2, Building2, Tag } from "lucide-react";
+import { UsersAdmin } from "@/components/users-admin";
 
 export const Route = createFileRoute("/settings")({ component: () => <Protected path="/settings"><Settings /></Protected> });
 
@@ -82,6 +83,7 @@ function Settings() {
           <TabsTrigger value="shop">Shop</TabsTrigger>
           <TabsTrigger value="branches">Branches</TabsTrigger>
           <TabsTrigger value="coupons">Coupons</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
         </TabsList>
 
         <TabsContent value="shop">
@@ -141,6 +143,10 @@ function Settings() {
               {coupons.length === 0 && <div className="text-center py-6 text-muted-foreground text-sm">No coupons yet</div>}
             </div>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="users">
+          <UsersAdmin />
         </TabsContent>
       </Tabs>
     </div>
