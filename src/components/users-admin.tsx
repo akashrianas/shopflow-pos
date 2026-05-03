@@ -34,8 +34,8 @@ export function UsersAdmin() {
         return;
       }
       setIsAdmin(true);
-      const list = (await adminListUsers()) as U[];
-      setUsers(list);
+      const result = (await adminListUsers()) as { users?: U[] } | U[];
+      setUsers(Array.isArray(result) ? result : result.users ?? []);
     } catch (e: any) {
       setUsers([]);
       toast.error(e?.message ?? "Failed to load users");
