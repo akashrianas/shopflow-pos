@@ -69,9 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
       <main className="flex-1 min-w-0 overflow-x-hidden">
-        <motion.div key={path} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="h-full">
-          {children}
-        </motion.div>
+        {children}
       </main>
     </div>
   );
