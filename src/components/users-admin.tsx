@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,37 +7,44 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { UserPlus, Trash2, Shield, Lock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { adminListUsers, adminCreateUser, adminSetUserRole, adminDeleteUser } from "@/server/users.functions";
 
 type Role = "admin" | "manager" | "salesman";
 interface U { id: string; email?: string; full_name: string | null; role: Role; created_at: string; }
 
 export function UsersAdmin() {
+  const { user, role, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<U[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [form, setForm] = useState({ email: "", password: "", full_name: "", role: "salesman" as Role });
 
-  async function load() {
+  const load = useCallback(async () => {
+    if (authLoading) {
+      setIsAdmin(null);
+      setLoading(true);
+      return;
+    }
     setLoading(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) { setIsAdmin(false); setLoading(false); return; }
-      const { data: roleRow } = await supabase
-        .from("user_roles").select("role").eq("user_id", auth.user.id).eq("role", "admin").maybeSingle();
-      const admin = !!roleRow;
-      setIsAdmin(admin);
-      if (!admin) { setLoading(false); return; }
+      if (!user || role !== "admin") {
+        setIsAdmin(false);
+        setUsers([]);
+        return;
+      }
+      setIsAdmin(true);
       const list = (await adminListUsers()) as U[];
       setUsers(list);
     } catch (e: any) {
+      setUsers([]);
       toast.error(e?.message ?? "Failed to load users");
     } finally {
       setLoading(false);
     }
-  }
-  useEffect(() => { load(); }, []);
+  }, [authLoading, role, user]);
+
+  useEffect(() => { void load(); }, [load]);
 
   async function create() {
     if (!form.email || !form.password || form.password.length < 6) return toast.error("Email and password (6+ chars) required");
