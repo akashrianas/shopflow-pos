@@ -55,7 +55,12 @@ function Invoices() {
       date: new Date(selected.created_at).toLocaleString(),
       salesman: "Staff",
       shopName: "Supershop", shopAddress: "123 Market St", shopPhone: "+1 555 0100",
-      customer: customer ?? {},
+      customer: {
+        name: customer?.name,
+        phone: customer?.phone ?? undefined,
+        email: customer?.email ?? undefined,
+        address: customer?.address ?? undefined,
+      },
       items: items.map((i) => ({ name: i.product_name, quantity: i.quantity, unitPrice: Number(i.unit_price), lineTotal: Number(i.line_total) })),
       subtotal: Number(selected.subtotal), discount: Number(selected.discount), tax: Number(selected.tax), total: Number(selected.total),
       paymentMethod: selected.payment_method,
