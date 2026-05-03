@@ -32,6 +32,10 @@ interface U {
   last_sign_in_at?: string | null;
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export function UsersAdmin() {
   const { user, role, loading: authLoading } = useAuth();
   const [users, setUsers] = useState<U[]>([]);
@@ -60,9 +64,9 @@ export function UsersAdmin() {
       setIsAdmin(true);
       const result = (await adminListUsers()) as { users?: U[] } | U[];
       setUsers(Array.isArray(result) ? result : (result.users ?? []));
-    } catch (e: any) {
+    } catch (e: unknown) {
       setUsers([]);
-      toast.error(e?.message ?? "Failed to load users");
+      toast.error(getErrorMessage(e, "Failed to load users"));
     } finally {
       setLoading(false);
     }
@@ -78,12 +82,14 @@ export function UsersAdmin() {
     try {
       const result = (await adminCreateUser({ data: form })) as { user?: U };
       toast.success("User created");
-      if (result.user)
-        setUsers((current) => [result.user!, ...current.filter((u) => u.id !== result.user!.id)]);
+      if (result.user) {
+        const createdUser = result.user;
+        setUsers((current) => [createdUser, ...current.filter((u) => u.id !== createdUser.id)]);
+      }
       setForm({ email: "", password: "", full_name: "", role: "salesman" });
       void load();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e, "Failed"));
     }
   }
   async function setRole(id: string, role: Role) {
@@ -91,8 +97,8 @@ export function UsersAdmin() {
       await adminSetUserRole({ data: { user_id: id, role } });
       toast.success("Role updated");
       load();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e, "Failed"));
     }
   }
   async function del(id: string) {
@@ -101,8 +107,8 @@ export function UsersAdmin() {
       await adminDeleteUser({ data: { user_id: id } });
       toast.success("Deleted");
       load();
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed");
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e, "Failed"));
     }
   }
 
