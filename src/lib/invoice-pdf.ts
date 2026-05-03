@@ -24,7 +24,7 @@ export function generateInvoicePdf(d: InvoiceData) {
 
   doc.setFillColor(85, 80, 220);
   doc.rect(0, 0, w, 80, "F");
-  doc.setTextColor(255);
+  doc.setTextColor(255,255,255);
   doc.setFontSize(22).setFont("helvetica", "bold");
   doc.text(d.shopName, 40, 45);
   doc.setFontSize(10).setFont("helvetica", "normal");
@@ -38,7 +38,7 @@ export function generateInvoicePdf(d: InvoiceData) {
   doc.text(d.date, w - 40, 75, { align: "right" });
 
   y = 110;
-  doc.setTextColor(40);
+  doc.setTextColor(40,40,40);
   doc.setFontSize(11).setFont("helvetica", "bold");
   doc.text("Bill To", 40, y);
   doc.text("Cashier", w / 2, y);
@@ -69,7 +69,7 @@ export function generateInvoicePdf(d: InvoiceData) {
   });
 
   y += 10;
-  doc.setDrawColor(200);
+  doc.setDrawColor(200,200,200);
   doc.line(w - 240, y, w - 40, y);
   y += 16;
   const row = (label: string, val: string, bold = false) => {
@@ -84,7 +84,7 @@ export function generateInvoicePdf(d: InvoiceData) {
   doc.setFontSize(13);
   row("TOTAL", d.total.toFixed(2), true);
 
-  doc.setFontSize(9).setTextColor(120);
+  doc.setFontSize(9).setTextColor(120,120,120);
   doc.text("Thank you for your business!", w / 2, doc.internal.pageSize.getHeight() - 30, { align: "center" });
 
   return doc;
