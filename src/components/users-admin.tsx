@@ -58,6 +58,19 @@ export function UsersAdmin() {
     catch (e: any) { toast.error(e?.message ?? "Failed"); }
   }
 
+  if (loading && isAdmin === null) {
+    return <Card className="glass p-8 text-center text-muted-foreground text-sm">Checking permissions…</Card>;
+  }
+  if (isAdmin === false) {
+    return (
+      <Card className="glass p-8 text-center space-y-2">
+        <Lock className="h-6 w-6 mx-auto text-muted-foreground" />
+        <div className="font-bold">Admin access required</div>
+        <div className="text-xs text-muted-foreground">Only administrators can manage users.</div>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <Card className="glass p-4 space-y-3">
