@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -11,7 +12,7 @@ function admin() {
   });
 }
 
-async function assertAdmin(supabase: any, userId: string) {
+async function assertAdmin(supabase: SupabaseClient<Database>, userId: string) {
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
@@ -41,7 +42,10 @@ export const adminListUsers = createServerFn({ method: "POST" })
         created_at: u.created_at,
         full_name: profiles?.find((p) => p.id === u.id)?.full_name ?? null,
         role: (roles?.find((r) => r.user_id === u.id)?.role ?? "salesman") as Role,
-        status: u.email_confirmed_at || (u as any).confirmed_at ? "active" : "invited",
+        status:
+          u.email_confirmed_at || (u as { confirmed_at?: string | null }).confirmed_at
+            ? "active"
+            : "invited",
         last_sign_in_at: u.last_sign_in_at ?? null,
       })),
     };
@@ -77,7 +81,8 @@ export const adminCreateUser = createServerFn({ method: "POST" })
         full_name: data.full_name || null,
         role: data.role,
         status:
-          created.user.email_confirmed_at || (created.user as any).confirmed_at
+          created.user.email_confirmed_at ||
+          (created.user as { confirmed_at?: string | null }).confirmed_at
             ? "active"
             : "invited",
         last_sign_in_at: created.user.last_sign_in_at ?? null,
