@@ -62,7 +62,7 @@ export function generateInvoicePdf(d: InvoiceData) {
   doc.setFont("helvetica", "normal");
   d.items.forEach((it) => {
     doc.text(it.name.slice(0, 50), 50, y);
-    doc.text(String(it.quantity), w - 240, y, { align: "right" });
+    doc.text(it.quantity.toString(), w - 240, y, { align: "right" });
     doc.text(it.unitPrice.toFixed(2), w - 160, y, { align: "right" });
     doc.text(it.lineTotal.toFixed(2), w - 50, y, { align: "right" });
     y += 18;
