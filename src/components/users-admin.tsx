@@ -107,8 +107,20 @@ export function UsersAdmin() {
           {users.map((u) => (
             <div key={u.id} className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-muted/40">
               <div className="flex-1 min-w-[200px]">
-                <div className="font-medium">{u.full_name ?? "—"}</div>
+                <div className="font-medium flex items-center gap-2">
+                  {u.full_name ?? "—"}
+                  <Badge variant="outline" className="capitalize text-[10px]">{u.role}</Badge>
+                  {u.status === "invited" ? (
+                    <Badge className="text-[10px] bg-amber-500/15 text-amber-600 border-amber-500/30">Invite sent</Badge>
+                  ) : (
+                    <Badge className="text-[10px] bg-emerald-500/15 text-emerald-600 border-emerald-500/30">Accepted</Badge>
+                  )}
+                </div>
                 <div className="text-xs text-muted-foreground">{u.email}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">
+                  Joined {new Date(u.created_at).toLocaleDateString()}
+                  {u.last_sign_in_at ? ` · Last seen ${new Date(u.last_sign_in_at).toLocaleDateString()}` : " · Never signed in"}
+                </div>
               </div>
               <Select value={u.role} onValueChange={(v) => setRole(u.id, v as Role)}>
                 <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
@@ -118,7 +130,6 @@ export function UsersAdmin() {
                   <SelectItem value="salesman">Salesman</SelectItem>
                 </SelectContent>
               </Select>
-              <Badge variant="outline" className="capitalize">{u.role}</Badge>
               <Button size="icon" variant="ghost" onClick={() => del(u.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
             </div>
           ))}
