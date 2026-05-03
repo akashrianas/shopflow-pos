@@ -11,7 +11,7 @@ import { useAuth } from "@/lib/auth";
 import { adminListUsers, adminCreateUser, adminSetUserRole, adminDeleteUser } from "@/server/users.functions";
 
 type Role = "admin" | "manager" | "salesman";
-interface U { id: string; email?: string; full_name: string | null; role: Role; created_at: string; }
+interface U { id: string; email?: string; full_name: string | null; role: Role; created_at: string; status?: "active" | "invited"; last_sign_in_at?: string | null; }
 
 export function UsersAdmin() {
   const { user, role, loading: authLoading } = useAuth();
