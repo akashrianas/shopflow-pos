@@ -28,13 +28,13 @@ export const adminListUsers = createServerFn({ method: "GET" })
       sb.from("user_roles").select("user_id, role").in("user_id", ids),
       sb.from("profiles").select("id, full_name").in("id", ids),
     ]);
-    return list.users.map((u) => ({
+    return { users: list.users.map((u) => ({
       id: u.id,
       email: u.email,
       created_at: u.created_at,
       full_name: profiles?.find((p) => p.id === u.id)?.full_name ?? null,
       role: (roles?.find((r) => r.user_id === u.id)?.role ?? "salesman") as Role,
-    }));
+    })) };
   });
 
 export const adminCreateUser = createServerFn({ method: "POST" })
