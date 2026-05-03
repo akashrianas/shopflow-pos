@@ -49,10 +49,11 @@ export function UsersAdmin() {
   async function create() {
     if (!form.email || !form.password || form.password.length < 6) return toast.error("Email and password (6+ chars) required");
     try {
-      await adminCreateUser({ data: form });
+      const result = (await adminCreateUser({ data: form })) as { user?: U };
       toast.success("User created");
+      if (result.user) setUsers((current) => [result.user!, ...current.filter((u) => u.id !== result.user!.id)]);
       setForm({ email: "", password: "", full_name: "", role: "salesman" });
-      load();
+      void load();
     } catch (e: any) { toast.error(e?.message ?? "Failed"); }
   }
   async function setRole(id: string, role: Role) {
