@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { UserPlus, Trash2, Shield } from "lucide-react";
+import { UserPlus, Trash2, Shield, Lock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { adminListUsers, adminCreateUser, adminSetUserRole, adminDeleteUser } from "@/server/users.functions";
 
 type Role = "admin" | "manager" | "salesman";
@@ -14,14 +15,27 @@ interface U { id: string; email?: string; full_name: string | null; role: Role; 
 
 export function UsersAdmin() {
   const [users, setUsers] = useState<U[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [form, setForm] = useState({ email: "", password: "", full_name: "", role: "salesman" as Role });
 
   async function load() {
     setLoading(true);
-    try { setUsers((await adminListUsers()) as U[]); }
-    catch (e: any) { toast.error(e?.message ?? "Failed to load users"); }
-    finally { setLoading(false); }
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) { setIsAdmin(false); setLoading(false); return; }
+      const { data: roleRow } = await supabase
+        .from("user_roles").select("role").eq("user_id", auth.user.id).eq("role", "admin").maybeSingle();
+      const admin = !!roleRow;
+      setIsAdmin(admin);
+      if (!admin) { setLoading(false); return; }
+      const list = (await adminListUsers()) as U[];
+      setUsers(list);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to load users");
+    } finally {
+      setLoading(false);
+    }
   }
   useEffect(() => { load(); }, []);
 
@@ -42,6 +56,19 @@ export function UsersAdmin() {
     if (!confirm("Delete this user?")) return;
     try { await adminDeleteUser({ data: { user_id: id } }); toast.success("Deleted"); load(); }
     catch (e: any) { toast.error(e?.message ?? "Failed"); }
+  }
+
+  if (loading && isAdmin === null) {
+    return <Card className="glass p-8 text-center text-muted-foreground text-sm">Checking permissions…</Card>;
+  }
+  if (isAdmin === false) {
+    return (
+      <Card className="glass p-8 text-center space-y-2">
+        <Lock className="h-6 w-6 mx-auto text-muted-foreground" />
+        <div className="font-bold">Admin access required</div>
+        <div className="text-xs text-muted-foreground">Only administrators can manage users.</div>
+      </Card>
+    );
   }
 
   return (
