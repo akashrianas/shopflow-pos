@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { UserPlus, Trash2, Shield, Lock } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   adminListUsers,
   adminCreateUser,
@@ -75,6 +76,28 @@ export function UsersAdmin() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (isAdmin !== true) return;
+
+    const channel = supabase
+      .channel("team-members-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => void load(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        () => void load(),
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [isAdmin, load]);
 
   async function create() {
     if (!form.email || !form.password || form.password.length < 6)
