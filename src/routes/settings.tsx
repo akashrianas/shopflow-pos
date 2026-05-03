@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Trash2, Building2, Tag } from "lucide-react";
 import { UsersAdmin } from "@/components/users-admin";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/settings")({ component: () => <Protected path="/settings"><Settings /></Protected> });
 
@@ -19,6 +20,7 @@ interface Branch { id: string; name: string; address: string | null; phone: stri
 interface Coupon { id: string; code: string; type: string; value: number; usage_limit: number | null; usage_count: number; active: boolean; }
 
 function Settings() {
+  const { role } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [shopName, setShopName] = useState(localStorage.getItem("shop_name") ?? "Supershop");
@@ -83,7 +85,7 @@ function Settings() {
           <TabsTrigger value="shop">Shop</TabsTrigger>
           <TabsTrigger value="branches">Branches</TabsTrigger>
           <TabsTrigger value="coupons">Coupons</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
+          {role === "admin" && <TabsTrigger value="users">Users</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="shop">
@@ -145,9 +147,11 @@ function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users">
-          <UsersAdmin />
-        </TabsContent>
+        {role === "admin" && (
+          <TabsContent value="users">
+            <UsersAdmin />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
