@@ -20,7 +20,7 @@ import {
   adminCreateUser,
   adminSetUserRole,
   adminDeleteUser,
-} from "@/server/users.functions";
+} from "@/lib/users.functions";
 
 type Role = "admin" | "manager" | "salesman";
 interface U {

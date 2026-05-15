@@ -20,7 +20,7 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export const Route = createFileRoute("/pos")({ component: () => <Protected path="/pos"><POS /></Protected> });
 
-interface Product { id: string; name: string; sell_price: number; stock_quantity: number; barcode: string | null; sku: string | null; }
+interface Product { id: string; name: string; sell_price: number; stock_quantity: number; barcode: string | null; sku: string | null; image_url: string | null; }
 
 function POS() {
   const cart = useCart();
@@ -33,7 +33,7 @@ function POS() {
   const [lastInvoice, setLastInvoice] = useState<{ id: string; number: string; phone?: string } | null>(null);
 
   async function load() {
-    const { data } = await supabase.from("products").select("id, name, sell_price, stock_quantity, barcode, sku").order("name");
+    const { data } = await supabase.from("products").select("id, name, sell_price, stock_quantity, barcode, sku, image_url").order("name");
     setProducts(data ?? []);
   }
   useEffect(() => { load(); }, []);
@@ -126,8 +126,22 @@ function POS() {
                 onClick={() => addProduct(p)}
                 className="glass rounded-xl p-3 text-left hover:border-primary/50 transition-colors"
               >
-                <div className="aspect-square rounded-lg gradient-primary mb-2 grid place-items-center text-white text-xl font-bold opacity-70">
-                  {p.name.slice(0, 2).toUpperCase()}
+                <div className="aspect-square rounded-lg mb-2 overflow-hidden bg-muted">
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.name} loading="lazy" className="h-full w-full object-cover" onError={(e) => {
+                      const img = e.currentTarget as HTMLImageElement;
+                      img.style.display = 'none';
+                      img.parentElement?.classList.add('gradient-primary', 'grid', 'place-items-center');
+                      const fb = document.createElement('span');
+                      fb.className = 'text-white text-xl font-bold opacity-70';
+                      fb.textContent = p.name.slice(0, 2).toUpperCase();
+                      img.parentElement?.appendChild(fb);
+                    }} />
+                  ) : (
+                    <div className="h-full w-full gradient-primary grid place-items-center text-white text-xl font-bold opacity-70">
+                      {p.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="font-medium text-sm truncate">{p.name}</div>
                 <div className="flex justify-between text-xs mt-1">

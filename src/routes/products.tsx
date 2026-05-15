@@ -15,7 +15,7 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export const Route = createFileRoute("/products")({ component: () => <Protected path="/products"><Products /></Protected> });
 
-interface Product { id: string; name: string; sku: string | null; barcode: string | null; cost_price: number; sell_price: number; stock_quantity: number; low_stock_threshold: number; }
+interface Product { id: string; name: string; sku: string | null; barcode: string | null; cost_price: number; sell_price: number; stock_quantity: number; low_stock_threshold: number; image_url: string | null; }
 
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -39,6 +39,7 @@ function Products() {
       cost_price: Number(editing.cost_price) || 0, sell_price: Number(editing.sell_price) || 0,
       stock_quantity: Number(editing.stock_quantity) || 0,
       low_stock_threshold: Number(editing.low_stock_threshold) || 5,
+      image_url: editing.image_url?.trim() || null,
     };
     const { error } = editing.id
       ? await supabase.from("products").update(payload).eq("id", editing.id)
@@ -73,6 +74,7 @@ function Products() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-muted-foreground border-b border-border">
+                <th className="py-2 px-2 w-14"></th>
                 <th className="py-2 px-2">Name</th>
                 <th className="py-2 px-2">SKU</th>
                 <th className="py-2 px-2">Barcode</th>
@@ -86,6 +88,15 @@ function Products() {
               <AnimatePresence>
                 {rows.map((p) => (
                   <motion.tr key={p.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b border-border/50 hover:bg-muted/30">
+                    <td className="py-2 px-2">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.name} loading="lazy" className="h-10 w-10 rounded-md object-cover bg-muted" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <div className="h-10 w-10 rounded-md gradient-primary grid place-items-center text-white text-[10px] font-bold opacity-70">
+                          {p.name.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td className="py-2.5 px-2 font-medium">{p.name}</td>
                     <td className="py-2.5 px-2 font-mono text-xs">{p.sku ?? "—"}</td>
                     <td className="py-2.5 px-2 font-mono text-xs">{p.barcode ?? "—"}</td>
@@ -99,7 +110,7 @@ function Products() {
                   </motion.tr>
                 ))}
               </AnimatePresence>
-              {rows.length === 0 && <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No products yet</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No products yet</td></tr>}
             </tbody>
           </table>
         </div>
@@ -133,6 +144,13 @@ function Products() {
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Stock Qty</Label><Input type="number" value={editing?.stock_quantity ?? ""} onChange={(e) => setEditing({ ...editing, stock_quantity: Number(e.target.value) })} /></div>
               <div><Label>Low Stock Alert</Label><Input type="number" value={editing?.low_stock_threshold ?? 5} onChange={(e) => setEditing({ ...editing, low_stock_threshold: Number(e.target.value) })} /></div>
+            </div>
+            <div>
+              <Label>Image URL</Label>
+              <Input placeholder="https://..." value={editing?.image_url ?? ""} onChange={(e) => setEditing({ ...editing, image_url: e.target.value })} />
+              {editing?.image_url ? (
+                <img src={editing.image_url} alt="preview" className="mt-2 h-20 w-20 rounded-md object-cover bg-muted" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+              ) : null}
             </div>
             <Button onClick={save} className="w-full gradient-primary text-white border-0">Save</Button>
           </div>
