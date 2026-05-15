@@ -20,7 +20,7 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export const Route = createFileRoute("/pos")({ component: () => <Protected path="/pos"><POS /></Protected> });
 
-interface Product { id: string; name: string; sell_price: number; stock_quantity: number; barcode: string | null; sku: string | null; }
+interface Product { id: string; name: string; sell_price: number; stock_quantity: number; barcode: string | null; sku: string | null; image_url: string | null; }
 
 function POS() {
   const cart = useCart();
