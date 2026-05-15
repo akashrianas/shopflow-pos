@@ -615,6 +615,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_products: {
+        Args: never
+        Returns: {
+          barcode: string | null
+          branch_id: string | null
+          category_id: string | null
+          cost_price: number
+          created_at: string
+          id: string
+          image_url: string | null
+          low_stock_threshold: number
+          name: string
+          sell_price: number
+          sku: string | null
+          stock_quantity: number
+          supplier_id: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "products"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       gen_invoice_number: { Args: never; Returns: string }
       get_user_role: {
         Args: { _user_id: string }
