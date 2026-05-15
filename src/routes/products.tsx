@@ -39,6 +39,7 @@ function Products() {
       cost_price: Number(editing.cost_price) || 0, sell_price: Number(editing.sell_price) || 0,
       stock_quantity: Number(editing.stock_quantity) || 0,
       low_stock_threshold: Number(editing.low_stock_threshold) || 5,
+      image_url: editing.image_url?.trim() || null,
     };
     const { error } = editing.id
       ? await supabase.from("products").update(payload).eq("id", editing.id)
