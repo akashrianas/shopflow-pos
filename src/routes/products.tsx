@@ -145,7 +145,13 @@ function Products() {
               <div><Label>Stock Qty</Label><Input type="number" value={editing?.stock_quantity ?? ""} onChange={(e) => setEditing({ ...editing, stock_quantity: Number(e.target.value) })} /></div>
               <div><Label>Low Stock Alert</Label><Input type="number" value={editing?.low_stock_threshold ?? 5} onChange={(e) => setEditing({ ...editing, low_stock_threshold: Number(e.target.value) })} /></div>
             </div>
-            <Button onClick={save} className="w-full gradient-primary text-white border-0">Save</Button>
+            <div>
+              <Label>Image URL</Label>
+              <Input placeholder="https://..." value={editing?.image_url ?? ""} onChange={(e) => setEditing({ ...editing, image_url: e.target.value })} />
+              {editing?.image_url ? (
+                <img src={editing.image_url} alt="preview" className="mt-2 h-20 w-20 rounded-md object-cover bg-muted" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+              ) : null}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
