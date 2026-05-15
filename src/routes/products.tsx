@@ -24,7 +24,8 @@ function Products() {
   const [scanOpen, setScanOpen] = useState(false);
 
   async function load() {
-    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc("admin_list_products");
+    if (error) { toast.error(error.message); return; }
     setProducts((data ?? []) as Product[]);
   }
   useEffect(() => { load(); }, []);
