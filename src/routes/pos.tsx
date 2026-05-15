@@ -33,7 +33,7 @@ function POS() {
   const [lastInvoice, setLastInvoice] = useState<{ id: string; number: string; phone?: string } | null>(null);
 
   async function load() {
-    const { data } = await supabase.from("products").select("id, name, sell_price, stock_quantity, barcode, sku").order("name");
+    const { data } = await supabase.from("products").select("id, name, sell_price, stock_quantity, barcode, sku, image_url").order("name");
     setProducts(data ?? []);
   }
   useEffect(() => { load(); }, []);
