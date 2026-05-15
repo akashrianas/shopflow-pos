@@ -15,7 +15,7 @@ import { BarcodeScanner } from "@/components/barcode-scanner";
 
 export const Route = createFileRoute("/products")({ component: () => <Protected path="/products"><Products /></Protected> });
 
-interface Product { id: string; name: string; sku: string | null; barcode: string | null; cost_price: number; sell_price: number; stock_quantity: number; low_stock_threshold: number; }
+interface Product { id: string; name: string; sku: string | null; barcode: string | null; cost_price: number; sell_price: number; stock_quantity: number; low_stock_threshold: number; image_url: string | null; }
 
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
