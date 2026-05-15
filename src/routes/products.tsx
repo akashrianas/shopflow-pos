@@ -152,6 +152,7 @@ function Products() {
                 <img src={editing.image_url} alt="preview" className="mt-2 h-20 w-20 rounded-md object-cover bg-muted" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               ) : null}
             </div>
+            <Button onClick={save} className="w-full gradient-primary text-white border-0">Save</Button>
           </div>
         </DialogContent>
       </Dialog>
