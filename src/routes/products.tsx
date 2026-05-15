@@ -110,7 +110,7 @@ function Products() {
                   </motion.tr>
                 ))}
               </AnimatePresence>
-              {rows.length === 0 && <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No products yet</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No products yet</td></tr>}
             </tbody>
           </table>
         </div>
