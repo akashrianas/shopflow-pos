@@ -74,6 +74,7 @@ function Products() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-muted-foreground border-b border-border">
+                <th className="py-2 px-2 w-14"></th>
                 <th className="py-2 px-2">Name</th>
                 <th className="py-2 px-2">SKU</th>
                 <th className="py-2 px-2">Barcode</th>
@@ -87,6 +88,15 @@ function Products() {
               <AnimatePresence>
                 {rows.map((p) => (
                   <motion.tr key={p.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b border-border/50 hover:bg-muted/30">
+                    <td className="py-2 px-2">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.name} loading="lazy" className="h-10 w-10 rounded-md object-cover bg-muted" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <div className="h-10 w-10 rounded-md gradient-primary grid place-items-center text-white text-[10px] font-bold opacity-70">
+                          {p.name.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td className="py-2.5 px-2 font-medium">{p.name}</td>
                     <td className="py-2.5 px-2 font-mono text-xs">{p.sku ?? "—"}</td>
                     <td className="py-2.5 px-2 font-mono text-xs">{p.barcode ?? "—"}</td>
